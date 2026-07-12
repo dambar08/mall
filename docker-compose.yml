@@ -1,0 +1,54 @@
+name: "mall"
+
+services:
+  selenium:
+    image: selenium/standalone-chromium
+    restart: unless-stopped
+    networks:
+      - mall
+
+  memcached:
+    image: memcached:1.6-alpine
+    command: memcached -m 256
+    networks:
+      - mall
+    ports:
+      - "127.0.0.1:11211:11211"
+
+  redis:
+    image: valkey/valkey:8
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    networks:
+      - mall
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - /data/redis-data:/data
+  nginx:
+    image: nginx:1.22
+    container_name: nginx
+    volumes:
+      - /data/nginx/conf:/etc/nginx
+      - /data/nginx/html:/usr/share/nginx/html
+      - /data/nginx/logs:/var/log/nginx
+
+  postgres:
+    image: postgres:16.1
+    restart: unless-stopped
+    networks:
+      - mall
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - /data/postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+volumes:
+  redis-data:
+  postgres-data:
+networks:
+  mall:
+    driver: bridge
