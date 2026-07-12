@@ -14,7 +14,7 @@ VCR.configure do |config|
 
   config.default_cassette_options = {
     record: :once,
-    match_requests_on: %i[method uri]
+    match_requests_on: %i[method uri],
   }
 
   config.filter_sensitive_data("<API_KEY>") do

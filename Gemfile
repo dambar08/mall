@@ -100,5 +100,3 @@ gem "rack-attack", "~> 6.8"
 gem "rack-timeout", "~> 0.7.0"
 gem "acts_as_paranoid", "~> 0.11.0"
 gem "active_storage_validations", "~> 3.0"
-
-
