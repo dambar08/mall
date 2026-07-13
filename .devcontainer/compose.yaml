@@ -7,10 +7,12 @@ services:
       dockerfile: .devcontainer/Dockerfile
 
     volumes:
-    - ../../mall:/workspaces/mall:cached
+      - ../../mall:/workspaces/mall:cached
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
+    networks:
+      - mall
 
     # Uncomment the next line to use a non-root user for all processes.
     # user: vscode
@@ -18,38 +20,52 @@ services:
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
     depends_on:
-    - selenium
-    - redis
-    - postgres
+      - selenium
+      - redis
+      - postgres
 
   selenium:
     image: selenium/standalone-chromium
     restart: unless-stopped
+    networks:
+      - mall
 
   memcached:
     image: memcached:1.6-alpine
     command: memcached -m 256
-    # ports:
-    #   - "11211:11211"
+    networks:
+      - mall
+    ports:
+      - "127.0.0.1:11211:11211"
 
   redis:
     image: valkey/valkey:8
     restart: unless-stopped
     command: redis-server --appendonly yes
+    networks:
+      - mall
+    ports:
+      - "127.0.0.1:6379:6379"
     volumes:
-    - /data/redis-data:/data
+      - /data/redis-data:/data
 
   postgres:
     image: postgres:16.1
     restart: unless-stopped
     networks:
-    - default
+      - mall
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
-    - /data/postgres-data:/var/lib/postgresql/data
+      - /data/postgres-data:/var/lib/postgresql/data
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
 volumes:
   redis-data:
   postgres-data:
+
+networks:
+  mall:
+    driver: bridge
