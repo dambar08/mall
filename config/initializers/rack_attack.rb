@@ -8,6 +8,8 @@ class Rack::Attack
     )
   else
     Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
+    # If you want to use Rails.cache (which is configured in config/environments/*.rb), uncomment the line below.
+    # Rack::Attack.cache.store = Rails.cache
   end
 
   
